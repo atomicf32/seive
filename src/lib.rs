@@ -1,45 +1,20 @@
-use std::collections::{ LinkedList, HashSet };
-
-pub fn calculate(limit: u128) -> Primes {
-	let mut primes = Primes::new();
-	let mut invalids = HashSet::new();
+pub fn calculate(limit: usize) -> Vec<usize> {
+	let mut primes = Vec::with_capacity(limit / 2);
+	let mut invalids = vec![true; limit + 1];
 
 	for i in 2..=limit {
-		if !invalids.contains(&i) {
-			primes.add(i);
+		if invalids[i] {
+			primes.push(i);
 
 			for j in 1..=limit {
 				if i * j > limit {
 					break;
 				}
 
-				invalids.insert(i * j);
+				invalids[i * j] = false;
 			}
 		}
 	}
 
 	primes
-}
-
-pub struct Primes {
-	array: LinkedList<u128>
-}
-
-impl Primes {
-	fn new() -> Self {
-		Self { array: LinkedList::new() }
-	}
-
-	fn add(&mut self, value: u128) {
-		self.array.push_back(value);
-	}
-}
-
-impl IntoIterator for Primes {
-	type Item = u128;
-	type IntoIter = <LinkedList<u128> as IntoIterator>::IntoIter;
-
-	fn into_iter(self) -> Self::IntoIter {
-		self.array.into_iter()
-	}
 }

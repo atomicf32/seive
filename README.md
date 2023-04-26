@@ -1,3 +1,3 @@
-# seive
+# sieve
 
 Sieve of Eratosthenes Algorithm

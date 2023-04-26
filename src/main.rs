@@ -24,9 +24,11 @@ fn main() {
 
     let now = Instant::now();
 
-    let primes = calculate(limit);
+    let result = calculate(limit);
 
     let elapsed = now.elapsed();
+
+    let primes = result.to_vec();
 
     if print {
         for i in &primes {

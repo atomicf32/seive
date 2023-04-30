@@ -1,6 +1,6 @@
 use std::{env, time::Instant};
 
-use seive::calculate;
+use sieve::calculate;
 
 fn main() {
     let mut args = env::args();
@@ -11,7 +11,7 @@ fn main() {
     let mut time = false;
 
     for i in args {
-        if let Ok(i) = i.parse::<usize>() {
+        if let Ok(i) = i.parse::<u64>() {
             limit = i;
         }
 
@@ -28,10 +28,8 @@ fn main() {
 
     let elapsed = now.elapsed();
 
-    let primes = result.to_vec();
-
     if print {
-        for i in &primes {
+        for i in result.iter() {
             print!("{}, ", i);
         }
 
@@ -39,6 +37,6 @@ fn main() {
     }
 
     if time {
-        println!("took {}s for {} primes", elapsed.as_secs_f32(), primes.iter().count());
+        println!("took {}s for {} primes", elapsed.as_secs_f32(), result.count_primes());
     }
 }

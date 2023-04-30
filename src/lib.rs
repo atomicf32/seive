@@ -1,51 +1,110 @@
-pub fn calculate(limit: usize) -> SeiveResult {
-	let mut result = vec![true; limit + 1];
-	result[0] = false;
-	result[1] = false;
+use bv::BitVec;
+
+pub fn calculate(limit: u64) -> SieveResult {
+	let mut sieve: BitVec<u8> = BitVec::new_fill(true, limit + 1);
+
+	sieve.set(0, false);
+	sieve.set(1, false);
 
 	for i in 2.. {
 		if i as f64 > (limit as f64).sqrt() {
 			break;
 		}
 		
-		if result[i] {
-			let mut j = i.pow(2);
-			while j <= limit {
-				result[j] = false;
-				j += i;
+		if sieve[i] {
+			for j in ((i * i)..=limit).step_by(i as usize) {
+				sieve.set(j, false);
 			}
 		}
 	}
 
-	SeiveResult { result }
+	SieveResult(sieve)
 }
 
-pub fn get_primes(result: &Vec<bool>) -> Vec<usize> {
-	let mut primes = Vec::with_capacity(result.len());
+pub struct SieveResult(BitVec<u8>);
 
-	for (n, i) in result.iter().enumerate() {
-		if *i {
-			primes.push(n);
-		}
-	}
+impl SieveResult {
+	pub fn count_primes(&self) -> u64 {
+		let mut count = 0;
 
-	primes
-}
-
-pub struct SeiveResult{
-	result: Vec<bool>
-}
-
-impl SeiveResult {
-	pub fn to_vec(&self) -> Vec<usize> {
-		let mut primes = Vec::with_capacity(self.result.iter().filter(|x| **x).count());
-
-		for (n, i) in self.result.iter().enumerate() {
-			if *i {
-				primes.push(n);
+		for i in 0..self.0.len() {
+			if self.0[i] {
+				count += 1;
 			}
 		}
 
-		primes
+		count
 	}
+
+	pub fn iter(&self) -> Iter {
+		Iter::new(&self.0)
+	}
+}
+
+impl IntoIterator for SieveResult {
+    type Item = u64;
+
+    type IntoIter = IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter::new(self.0)
+    }
+}
+
+pub struct Iter<'a> {
+	bits: &'a BitVec<u8>,
+	count: u64,
+}
+
+impl<'a> Iter<'a> {
+	pub fn new(bits: &'a BitVec<u8>) -> Self {
+		Self { bits, count: 0 }
+	}
+}
+
+impl Iterator for Iter<'_> {
+    type Item = u64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.count >= self.bits.len() {
+			return None;
+		}
+
+		while self.bits[self.count] == false {
+			self.count += 1;
+		}
+
+		self.count += 1;
+
+		Some(self.count - 1)
+    }
+}
+
+pub struct IntoIter {
+	bits: BitVec<u8>,
+	count: u64,
+}
+
+impl IntoIter {
+	pub fn new(bits: BitVec<u8>) -> Self {
+		Self { bits, count: 0 }
+	}
+}
+
+impl Iterator for IntoIter {
+    type Item = u64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.count >= self.bits.len() {
+			return None;
+		}
+
+		while self.bits[self.count] == false {
+			self.count += 1;
+		}
+
+		self.count += 1;
+
+		Some(self.count - 1)
+    }
 }

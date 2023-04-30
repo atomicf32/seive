@@ -11,7 +11,7 @@ fn main() {
     let mut time = false;
 
     for i in args {
-        if let Ok(i) = i.parse::<u64>() {
+        if let Ok(i) = i.parse::<usize>() {
             limit = i;
         }
 

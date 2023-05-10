@@ -6,7 +6,7 @@ fn main() {
     let mut args = env::args();
     args.next();
 
-    let mut limit = 1000;
+    let mut limit = 10000;
     let mut print = false;
     let mut time = false;
 
@@ -30,13 +30,13 @@ fn main() {
 
     if print {
         for i in result.iter() {
-            print!("{}, ", i);
+            print!("{}\n ", i);
         }
 
         println!("\n");
     }
 
     if time {
-        println!("took {}s for {} primes", elapsed.as_secs_f32(), result.count_primes());
+        println!("took {}s for {} primes", elapsed.as_secs_f64(), result.len());
     }
 }
